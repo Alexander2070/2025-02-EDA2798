@@ -1,16 +1,15 @@
 package service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import domain.Ahorro;
 import domain.Corriente;
 import domain.Cuenta;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServiceCuenta implements IServiceCuenta {
 
-    private final List<Cuenta> cuentas = new ArrayList<>();
 
+    private final List<Cuenta> cuentas = new ArrayList<>();
     public ServiceCuenta() {
         cuentas.add(new Ahorro("1001", 123, 1500.00,"2024-09-22"));
         cuentas.add(new Corriente("1002", 124, 2000.00,0.3));
@@ -37,8 +36,22 @@ public class ServiceCuenta implements IServiceCuenta {
     }
 
     @Override
-    public List<Cuenta> obtenerCuentas() {
-        return cuentas;
+    public Cuenta obtenernumeroCuenta(String numeroCuenta) {
+        for (Cuenta c : cuentas) {
+            if (c.getNumeroCuenta().equals(numeroCuenta)) {
+                return c;
+            }
+        }
+        return null;
     }
+    @Override
+public List<Cuenta> obtenerCuentas() {
+    return cuentas;
+}
 
+
+    @Override
+    public void crearCuenta(Cuenta cuenta) {
+        cuentas.add(cuenta);
+    }
 }
