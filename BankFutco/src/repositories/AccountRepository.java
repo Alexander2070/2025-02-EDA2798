@@ -30,40 +30,79 @@ public class AccountRepository {
         storage.add(new Account("ACC010", "Jorge Castro", "jorge.castro@example.com", "3000000010", "Checking",
                 "Calle 10"));
     }
+    /**
+     * Implementación solicitada: Crea una nueva cuenta.
+     */
+    public Account crearCuenta(Account newAccount) {
+        if (newAccount == null || newAccount.getAccountNumber() == null) {
+            throw new IllegalArgumentException("La cuenta y el accountNumber no pueden ser nulos al crear.");
+        }
 
+        // Verifica si ya existe una cuenta con el mismo número
+        if (existsById(newAccount.getAccountNumber())) {
+            // No se puede crear, ya existe. Retornamos null o lanzamos una excepción,
+            // dependiendo de la política de errores. Aquí retornamos null.
+            System.out.println("ERROR: La cuenta con número " + newAccount.getAccountNumber() + " ya existe. No se puede crear.");
+            return null;
+        }
+
+        // Si no existe, usa el método save para añadirla al almacenamiento.
+        return save(newAccount);
+    }
+
+    // CREATE - Save new account
     public Account save(Account account) {
-		if (account == null || account.getAccountNumber() == null) {
-			throw new IllegalArgumentException("Account o accountNumber no puede ser null");
-		}
-		storage.removeIf(a -> a.getAccountNumber().equals(account.getAccountNumber()));
+        if (account == null || account.getAccountNumber() == null) {
+            throw new IllegalArgumentException("Account o accountNumber no puede ser null");
+        }
+
+        // Check if account already exists using functional approach
+        storage.removeIf(a -> a.getAccountNumber().equals(account.getAccountNumber()));
         storage.add(account);
         return account;
-	}
+    }
 
-	public Optional<Account> findById(String accountNumber) {
-		if (accountNumber == null) return Optional.empty();
-		return storage.stream().filter(a -> accountNumber.equals(a.getAccountNumber())).findFirst();
-	}
-
-	public List<Account> findAll() {
-		return new ArrayList<>(storage);
-	}
-
-	public boolean deleteById(String accountNumber) {
-        //return findById(accountNumber).map(a-> storage.remove(a)).orElse(false);
-		return findById(accountNumber).map(storage::remove).orElse(false);
-        /*Optional<Account> account = findById(accountNumber);
-        if(account==null){
-            return false;
+    // UPDATE - Update existing account using Optional
+    public Optional<Account> update(String accountNumber, Account updatedAccount) {
+        if (accountNumber == null || updatedAccount == null) {
+            throw new IllegalArgumentException("AccountNumber y Account no pueden ser null");
         }
-        else{
-            return true;
-        }*/
 
-	}
+        return findById(accountNumber)
+                .map(existingAccount -> {
+                    storage.removeIf(acc -> acc.getAccountNumber().equals(accountNumber));
+                    updatedAccount.setAccountNumber(accountNumber);
+                    storage.add(updatedAccount);
+                    return updatedAccount;
+                });
+    }
 
-	public boolean existsById(String accountNumber) {
-		return storage.stream().anyMatch(a -> accountNumber != null && accountNumber.equals(a.getAccountNumber()));
-	}
+    // READ - Find by ID
+    public Optional<Account> findById(String accountNumber) {
+        if (accountNumber == null) {
+            return Optional.empty();
+        }
 
+        return storage.stream()
+                .filter(account -> account.getAccountNumber().equals(accountNumber))
+                .findFirst();
+    }
+
+    // READ ALL - Get all accounts
+    public List<Account> findAll() {
+        return new ArrayList<>(storage);
+    }
+
+    // DELETE - Remove account by ID
+    public boolean deleteById(String accountNumber) {
+        return findById(accountNumber)
+                .map(account -> storage.remove(account))
+                .orElse(false);
+    }
+
+    // Check if account exists
+    public boolean existsById(String accountNumber) {
+        return storage.stream()
+                .anyMatch(account -> account.getAccountNumber().equals(accountNumber));
+    }
 }
