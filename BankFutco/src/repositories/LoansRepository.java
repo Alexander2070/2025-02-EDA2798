@@ -7,28 +7,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import model.Balance;
+import model.Loans;
 
-public class BalanceRepository {
+public class LoansRepository {
 
-    private final Map<String, Balance> database = new HashMap<>();
+    private final Map<String, Loans> database = new HashMap<>();
 
-    public Balance save(Balance balance) {
+    public Loans save(Loans loan) {
         // Usamos la fecha como ID (date.toString())
-        String id = balance.getDate().toString();
-        database.put(id, balance);
-        return balance;
+        String id = loan.getDate().toString();
+        database.put(id, loan);
+        return loan;
     }
 
-    public Optional<Balance> findById(String id) {
+    public Optional<Loans> findById(String id) {
         return Optional.ofNullable(database.get(id));
     }
 
-    public Optional<Balance> findById(String id, LocalDate date) {
+    public Optional<Loans> findById(String id, LocalDate date) {
         return Optional.ofNullable(database.get(id));
     }
 
-    public List<Balance> findAll() {
+    public List<Loans> findAll() {
         return new ArrayList<>(database.values());
     }
 
